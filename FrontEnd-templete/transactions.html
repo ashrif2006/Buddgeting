@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Transactions | BudgetWise</title>
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+
+    <style>
+      :root {
+        --main-blue: #4d6ef6;
+        --bg-light: #f4f7fe;
+      }
+
+      body {
+        background-color: var(--bg-light);
+        font-family: "Segoe UI", sans-serif;
+      }
+
+      .sidebar {
+        min-width: 260px;
+        background: white;
+        height: 100vh;
+        position: sticky;
+        top: 0;
+        border-right: 1px solid #eef0f7;
+        padding: 40px 20px;
+      }
+
+      .nav-link {
+        color: #8e92a4;
+        padding: 12px 20px;
+        border-radius: 12px;
+        margin-bottom: 5px;
+        text-decoration: none;
+        display: block;
+      }
+
+      .nav-link.active,
+      .nav-link:hover {
+        background-color: #f0f3ff;
+        color: var(--main-blue) !important;
+      }
+
+      .avatar {
+        width: 60px;
+        height: 60px;
+        background: var(--main-blue);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin: 0 auto 15px;
+      }
+
+      .stat-card {
+        border-radius: 20px;
+        border: none;
+        padding: 20px;
+      }
+
+      .income-bg {
+        background-color: #e8f5e9;
+        color: #2e7d32;
+      }
+      .expense-bg {
+        background-color: #ffebee;
+        color: #c62828;
+      }
+
+      .trans-item {
+        background: white;
+        border-radius: 18px;
+        padding: 15px;
+        margin-bottom: 12px;
+        transition: 0.3s;
+      }
+
+      .trans-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      }
+
+      .icon-box {
+        width: 45px;
+        height: 45px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+      }
+
+      .add-btn-float {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        width: 60px;
+        height: 60px;
+        background: var(--main-blue);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        box-shadow: 0 8px 20px rgba(77, 110, 246, 0.4);
+        text-decoration: none;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="d-flex">
+      <!-- Sidebar -->
+      <nav class="sidebar">
+        <div class="text-center mb-5">
+          <div class="avatar" id="userAvatar">?</div>
+          <h6 class="fw-bold mb-0" id="userNameDisplay">User</h6>
+        </div>
+
+        <div class="nav flex-column">
+          <a href="home.html" class="nav-link"
+            ><i class="fas fa-home me-2"></i> Home</a
+          >
+          <a href="transactions.html" class="nav-link active"
+            ><i class="fas fa-exchange-alt me-2"></i> Trans.</a
+          >
+          <a href="budgets.html" class="nav-link"
+            ><i class="fas fa-chart-pie"></i> Budgets</a
+          >
+          <a href="goals.html" class="nav-link"
+            ><i class="fas fa-bullseye"></i> Goals</a
+          >
+        </div>
+      </nav>
+
+      <!-- Main -->
+      <main class="flex-grow-1 p-4 p-lg-5">
+        <h2 class="fw-bold mb-4">Transactions</h2>
+
+        <!-- Totals -->
+        <div class="row g-3 mb-4">
+          <div class="col-md-6">
+            <div class="stat-card income-bg shadow-sm">
+              <small>Total Income</small>
+              <h3 id="incomeTotal">+$0.00</h3>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="stat-card expense-bg shadow-sm">
+              <small>Total Expense</small>
+              <h3 id="expenseTotal">-$0.00</h3>
+            </div>
+          </div>
+        </div>
+
+        <!-- Transactions List -->
+        <div id="transactionsList"></div>
+      </main>
+    </div>
+
+    <a href="add-transaction.html" class="add-btn-float">
+      <i class="fas fa-plus"></i>
+    </a>
+
+    <script>
+      window.onload = function () {
+        const session = JSON.parse(localStorage.getItem("userAccount"));
+
+        if (!session || !session.email) {
+          window.location.href = "login.html";
+          return;
+        }
+
+        document.getElementById("userNameDisplay").innerText = session.name;
+        document.getElementById("userAvatar").innerText = session.name
+          ? session.name.charAt(0).toUpperCase()
+          : "?";
+
+        const allUsers = JSON.parse(localStorage.getItem("allUsers")) || [];
+        const user = allUsers.find((u) => u.email === session.email);
+
+        if (!user) {
+          localStorage.removeItem("userAccount");
+          window.location.href = "login.html";
+          return;
+        }
+
+        const transactions = user.transactions || [];
+
+        renderTransactions(transactions);
+        calculateTotals(transactions);
+      };
+
+      function renderTransactions(transactions) {
+        const container = document.getElementById("transactionsList");
+        container.innerHTML = "";
+
+        if (transactions.length === 0) {
+          container.innerHTML = `<p class="text-muted">No transactions yet.</p>`;
+          return;
+        }
+
+        let html = "";
+
+        transactions
+          .slice()
+          .reverse()
+          .forEach((t) => {
+            html += `
+        <div class="trans-item d-flex align-items-center shadow-sm">
+
+            <div class="icon-box bg-light me-3">
+                ${t.type === "income" ? "💰" : "💸"}
+            </div>
+
+            <div class="flex-grow-1">
+                <h6 class="mb-0 fw-bold">${t.description}</h6>
+                <small class="text-muted">
+                    ${t.category} • ${formatDate(t.date)}
+                </small>
+            </div>
+
+            <div class="${t.type === "income" ? "text-success" : "text-danger"} fw-bold">
+                ${t.type === "income" ? "+" : "-"}$${Number(t.amount).toFixed(2)}
+            </div>
+
+        </div>
+        `;
+          });
+
+        container.innerHTML = html;
+      }
+
+      function calculateTotals(transactions) {
+        let income = 0;
+        let expenses = 0;
+
+        transactions.forEach((t) => {
+          if (t.type === "income") income += Number(t.amount);
+          else expenses += Number(t.amount);
+        });
+
+        document.getElementById("incomeTotal").innerText =
+          "+$" + income.toFixed(2);
+        document.getElementById("expenseTotal").innerText =
+          "-$" + expenses.toFixed(2);
+      }
+
+      function formatDate(dateStr) {
+        const d = new Date(dateStr);
+        return d.toLocaleDateString();
+      }
+    </script>
+  </body>
+</html>

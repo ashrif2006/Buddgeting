@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create Budget | BudgetWise</title>
+    <!-- Bootstrap 5 CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Font Awesome Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+
+    <style>
+      :root {
+        --main-blue: #4d6ef6;
+        --bg-light: #f4f7fe;
+      }
+
+      body {
+        background-color: var(--bg-light);
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      .auth-container {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .card {
+        border: none;
+        border-radius: 25px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+        max-width: 500px;
+        width: 100%;
+      }
+
+      /* تنسيق الأيقونة زي اللي في الصورة */
+      .icon-box {
+        width: 85px;
+        height: 85px;
+        background-color: rgba(77, 110, 246, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 10px;
+        font-size: 2.5rem;
+        transition: transform 0.3s ease;
+      }
+
+      .icon-box:hover {
+        transform: scale(1.1);
+        cursor: pointer;
+      }
+
+      .form-label {
+        font-weight: 600;
+        font-size: 0.75rem;
+        color: #8e92a4;
+        letter-spacing: 1px;
+        margin-bottom: 8px;
+      }
+
+      .form-control,
+      .form-select {
+        background-color: #f8f9fe;
+        border: none;
+        padding: 12px 15px;
+        border-radius: 12px;
+        color: #1a1d2e;
+      }
+
+      .form-control:focus,
+      .form-select:focus {
+        background-color: #f0f3ff;
+        box-shadow: none;
+        outline: 2px solid var(--main-blue);
+      }
+
+      .btn-primary {
+        background-color: var(--main-blue);
+        border: none;
+        padding: 14px;
+        border-radius: 15px;
+        font-weight: bold;
+        font-size: 1rem;
+        transition: 0.3s;
+      }
+
+      .btn-primary:hover {
+        background-color: #3b5bdb;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(77, 110, 246, 0.3);
+      }
+
+      .back-link {
+        text-decoration: none;
+        color: #8e92a4;
+        font-size: 0.9rem;
+        transition: 0.2s;
+      }
+
+      .back-link:hover {
+        color: var(--main-blue);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container auth-container p-3">
+      <div class="card p-4 p-md-5">
+        <div class="text-center mb-4">
+          <h2 class="fw-bold mb-1">Create Budget</h2>
+          <p class="text-muted small">
+            Set your spending limit for better control
+          </p>
+        </div>
+
+        <!-- Emoji Section -->
+        <div class="text-center mb-4">
+          <div class="icon-box" id="emoji-display">
+            <span id="current-emoji">🍔</span>
+          </div>
+          <p class="small text-primary mb-0" style="cursor: pointer">
+            Tap to change icon
+          </p>
+        </div>
+
+        <form id="budget-form">
+          <!-- Category Select -->
+          <div class="mb-3">
+            <label class="form-label text-uppercase">Category</label>
+            <select
+              id="category"
+              class="form-select"
+              required
+              onchange="updateEmoji()"
+            >
+              <option value="Food & Dining" data-emoji="🍔">
+                Food & Dining
+              </option>
+              <option value="Transportation" data-emoji="🚗">
+                Transportation
+              </option>
+              <option value="Shopping" data-emoji="🛍️">Shopping</option>
+              <option value="Groceries" data-emoji="🛒">Groceries</option>
+              <option value="Entertainment" data-emoji="🎬">
+                Entertainment
+              </option>
+              <option value="Utility Bills" data-emoji="⚡">
+                Utility Bills
+              </option>
+            </select>
+          </div>
+
+          <!-- Amount Input -->
+          <div class="mb-3">
+            <label class="form-label text-uppercase">Budget Amount</label>
+            <div class="input-group">
+              <span
+                class="input-group-text bg-transparent border-0 text-muted fw-bold"
+                >$</span
+              >
+              <input
+                type="number"
+                id="amount"
+                class="form-control"
+                placeholder="0.00"
+                required
+              />
+            </div>
+          </div>
+
+          <!-- Date Selection Row -->
+          <div class="row mb-4">
+            <div class="col-6">
+              <label class="form-label text-uppercase">Start Date</label>
+              <input
+                type="date"
+                id="start-date"
+                class="form-control"
+                required
+              />
+            </div>
+            <div class="col-6">
+              <label class="form-label text-uppercase">End Date</label>
+              <input type="date" id="end-date" class="form-control" required />
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" class="btn btn-primary w-100 mb-3">
+            Create Budget
+          </button>
+        </form>
+
+        <div class="text-center">
+          <a href="budgets.html" class="back-link">
+            <i class="fas fa-arrow-left me-1"></i> Back to Budgets
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+      // دالة لتغيير الإيموجي بناءً على القسم المختار
+      function updateEmoji() {
+        const select = document.getElementById("category");
+        const selectedOption = select.options[select.selectedIndex];
+        const emoji = selectedOption.getAttribute("data-emoji");
+        document.getElementById("current-emoji").innerText = emoji;
+      }
+
+      const budgetForm = document.getElementById("budget-form");
+
+      if (budgetForm) {
+        budgetForm.addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          const session = JSON.parse(localStorage.getItem("userAccount"));
+
+          // حماية
+          if (!session || !session.email) {
+            window.location.href = "login.html";
+            return;
+          }
+
+          const category = document.getElementById("category").value;
+          const amount = parseFloat(document.getElementById("amount").value);
+          const startDate = document.getElementById("start-date").value;
+          const endDate = document.getElementById("end-date").value;
+          const icon = document.getElementById("current-emoji").innerText;
+
+          // Validation
+          if (!category || !amount || !startDate || !endDate) {
+            alert("Please fill all fields");
+            return;
+          }
+
+          if (amount <= 0) {
+            alert("Amount must be greater than 0");
+            return;
+          }
+
+          // جلب المستخدمين
+          let allUsers = JSON.parse(localStorage.getItem("allUsers")) || [];
+          const userIdx = allUsers.findIndex((u) => u.email === session.email);
+
+          if (userIdx === -1) return;
+
+          // تأكد إن budgets موجودة
+          if (!allUsers[userIdx].budgets) {
+            allUsers[userIdx].budgets = [];
+          }
+
+          // منع تكرار نفس الكاتيجوري
+          const existing = allUsers[userIdx].budgets.find(
+            (b) => b.category === category,
+          );
+          if (existing) {
+            alert("Budget for this category already exists!");
+            return;
+          }
+
+          const newBudget = {
+            id: Date.now(),
+            category,
+            amount,
+            spent: 0,
+            startDate,
+            endDate,
+            icon,
+            createdAt: new Date().toISOString(),
+          };
+
+          allUsers[userIdx].budgets.push(newBudget);
+
+          // حفظ
+          localStorage.setItem("allUsers", JSON.stringify(allUsers));
+
+          alert("Budget created successfully!");
+          window.location.href = "budgets.html";
+        });
+      }
+    </script>
+
+    <!-- Bootstrap Bundle with Popper JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
