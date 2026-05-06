@@ -42,21 +42,22 @@
           const email = document.getElementById("email").value;
           const password = document.getElementById("password").value;
 
-          // 1. جلب المستخدمين الحاليين أو إنشاء مصفوفة فارغة
+
           let allUsers = JSON.parse(localStorage.getItem("allUsers")) || [];
 
-          // 2. التأكد إن الإيميل مش موجود قبل كده
+
           if (allUsers.find((u) => u.email === email)) {
             return alert("This email is already registered!");
           }
 
-          // 3. إنشاء كائن المستخدم الجديد بالهيكل اللي اتفقنا عليه
+
           const newUser = {
             name: name,
             email: email,
             password: password,
-            transactions: [], // مصفوفة العمليات الخاصة به
-            budgets: [], // مصفوفة الميزانيات الخاصة به
+            transactions: [], 
+            budgets: [],
+            goals: [] 
           };
 
           allUsers.push(newUser);

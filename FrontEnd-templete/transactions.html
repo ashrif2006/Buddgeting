@@ -143,6 +143,8 @@
           <a href="goals.html" class="nav-link"
             ><i class="fas fa-bullseye"></i> Goals</a
           >
+          <a href="reports.html" class="nav-link"
+            ><i class="fas fa-chart-line"></i> reports</a
         </div>
       </nav>
 
@@ -219,11 +221,20 @@
           .slice()
           .reverse()
           .forEach((t) => {
+            let icon = "💸";
+            let colorClass = "text-danger";
+            if (t.type === "income") {
+              icon = "💰";
+              colorClass = "text-success";
+            } else if (t.type === "saving") {
+              icon = "💾";
+              colorClass = "text-primary";
+            }
             html += `
         <div class="trans-item d-flex align-items-center shadow-sm">
 
             <div class="icon-box bg-light me-3">
-                ${t.type === "income" ? "💰" : "💸"}
+                ${icon}
             </div>
 
             <div class="flex-grow-1">
@@ -233,7 +244,7 @@
                 </small>
             </div>
 
-            <div class="${t.type === "income" ? "text-success" : "text-danger"} fw-bold">
+            <div class="${colorClass} fw-bold">
                 ${t.type === "income" ? "+" : "-"}$${Number(t.amount).toFixed(2)}
             </div>
 
@@ -247,10 +258,12 @@
       function calculateTotals(transactions) {
         let income = 0;
         let expenses = 0;
+        let saved = 0;
 
         transactions.forEach((t) => {
           if (t.type === "income") income += Number(t.amount);
-          else expenses += Number(t.amount);
+          else if (t.type === "expense") expenses += Number(t.amount);
+          else if (t.type === "saving") saved += Number(t.amount);
         });
 
         document.getElementById("incomeTotal").innerText =
