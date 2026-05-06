@@ -39,7 +39,6 @@
           this._initEvents();
         }
 
-        // ── Data Methods ──────────────────────────────────────────
         _isEmailTaken(email) {
           return this._allUsers.some((u) => u.email === email);
         }
@@ -57,7 +56,6 @@
           localStorage.setItem("allUsers", JSON.stringify(this._allUsers));
         }
 
-        // ── UI Methods ────────────────────────────────────────────
         _showError(elementId, message) {
           const el = document.getElementById(elementId);
           if (el) el.innerText = message;
@@ -69,7 +67,6 @@
           );
         }
 
-        // ── Event Initialization ──────────────────────────────────
         _initEvents() {
           document
             .getElementById("signupForm")
@@ -84,7 +81,6 @@
           const email    = document.getElementById("email").value.trim();
           const password = document.getElementById("password").value;
 
-          // Validation
           if (!name) return this._showError("nameError", "Name is required.");
           if (!email) return this._showError("emailError", "Email is required.");
           if (this._isEmailTaken(email))
@@ -98,7 +94,6 @@
         }
       }
 
-      // Bootstrap
       new SignupApp();
     </script>
   </body>

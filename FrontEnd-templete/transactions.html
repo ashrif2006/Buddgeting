@@ -123,7 +123,6 @@
 
   <body>
     <div class="d-flex">
-      <!-- Sidebar -->
       <nav class="sidebar">
         <div class="text-center mb-5">
           <div class="avatar" id="userAvatar">?</div>
@@ -148,11 +147,9 @@
         </div>
       </nav>
 
-      <!-- Main -->
       <main class="flex-grow-1 p-4 p-lg-5">
         <h2 class="fw-bold mb-4">Transactions</h2>
 
-        <!-- Totals -->
         <div class="row g-3 mb-4">
           <div class="col-md-6">
             <div class="stat-card income-bg shadow-sm">
@@ -168,7 +165,6 @@
           </div>
         </div>
 
-        <!-- Transactions List -->
         <div id="transactionsList"></div>
       </main>
     </div>
@@ -180,7 +176,6 @@
     <script>
       class TransactionsApp {
         constructor() {
-          // ── Session Guard ─────────────────────────────────────
           this._session = JSON.parse(localStorage.getItem("userAccount"));
           if (!this._session || !this._session.email) {
             window.location.href = "login.html";
@@ -199,7 +194,6 @@
           this._initUI();
         }
 
-        // ── UI Methods ────────────────────────────────────────────
         _initUI() {
           document.getElementById("userNameDisplay").innerText = this._session.name;
           document.getElementById("userAvatar").innerText =
@@ -248,13 +242,11 @@
           document.getElementById("expenseTotal").innerText = `-$${expenses.toFixed(2)}`;
         }
 
-        // ── Data Methods ──────────────────────────────────────────
         _formatDate(dateStr) {
           return new Date(dateStr).toLocaleDateString();
         }
       }
 
-      // Bootstrap
       new TransactionsApp();
     </script>
   </body>

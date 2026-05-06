@@ -20,7 +20,6 @@
 <body>
 
 <div class="d-flex">
-    <!-- Sidebar -->
     <nav class="sidebar">
         <h4 class="fw-bold mb-5 text-primary">BudgetWise</h4>
         <div class="nav flex-column">
@@ -32,12 +31,10 @@
         </div>
     </nav>
 
-    <!-- Main Content -->
     <main class="flex-grow-1 p-4">
         <h3 class="fw-bold mb-4">Financial Reports</h3>
 
         <div class="row g-4">
-            <!-- Expense Structure (Donut Chart) -->
             <div class="col-md-6">
                 <div class="card p-4 h-100">
                     <h6 class="fw-bold text-muted mb-4 text-uppercase">Expense Structure</h6>
@@ -47,7 +44,6 @@
                 </div>
             </div>
 
-            <!-- Income vs Expenses (Bar Chart) -->
             <div class="col-md-6">
                 <div class="card p-4 h-100">
                     <h6 class="fw-bold text-muted mb-4 text-uppercase">Income vs Expenses</h6>
@@ -57,7 +53,6 @@
                 </div>
             </div>
 
-            <!-- Smart Insights -->
             <div class="col-12">
                 <div class="card p-4 insight-card">
                     <div class="d-flex align-items-center">
@@ -76,7 +71,6 @@
 <script>
   class ReportsApp {
     constructor() {
-      // ── Session Guard ─────────────────────────────────────
       this._session = JSON.parse(localStorage.getItem("userAccount"));
       if (!this._session) { window.location.href = "login.html"; return; }
 
@@ -89,12 +83,6 @@
       this._initReports();
     }
 
-    // ── Data Methods ──────────────────────────────────────────
-    /**
-     * Processes transactions to produce:
-     *   - categoryData: { categoryName -> total expense amount }
-     *   - totalIncome, totalExpense
-     */
     _processData() {
       const categoryData = {};
       let totalIncome  = 0;
@@ -108,7 +96,6 @@
         } else if (t.type === "income") {
           totalIncome += amount;
         } else if (t.type === "saving") {
-          // Savings count as an outflow from the available balance
           totalExpense += amount;
         }
       });
@@ -116,7 +103,6 @@
       return { categoryData, totalIncome, totalExpense };
     }
 
-    // ── Chart Methods ─────────────────────────────────────────
     _initCategoryChart(categoryData) {
       new Chart(document.getElementById("categoryChart"), {
         type: "doughnut",
@@ -151,7 +137,6 @@
       });
     }
 
-    // ── UI Methods ────────────────────────────────────────────
     _renderInsight(categoryData, totalIncome, totalExpense) {
       const el = document.getElementById("insightText");
       if (totalExpense === 0) {
@@ -166,7 +151,6 @@
       }
     }
 
-    // ── Initializer ───────────────────────────────────────────
     _initReports() {
       const { categoryData, totalIncome, totalExpense } = this._processData();
       this._initCategoryChart(categoryData);
@@ -175,7 +159,6 @@
     }
   }
 
-  // Bootstrap
   new ReportsApp();
 </script>
 </body>

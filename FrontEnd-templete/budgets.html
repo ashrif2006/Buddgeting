@@ -115,7 +115,6 @@
 
   <body>
     <div class="d-flex">
-      <!-- Sidebar -->
       <nav class="sidebar">
         <div class="text-center mb-5">
           <div class="avatar" id="userAvatar">?</div>
@@ -141,14 +140,12 @@
         </div>
       </nav>
 
-      <!-- Main -->
       <main class="main-content">
         <div class="d-flex justify-content-between mb-4">
           <h2 class="fw-bold">Budgets</h2>
           <a href="create-budget.html" class="create-btn">+ Create</a>
         </div>
 
-        <!-- Summary -->
         <div class="total-budget-card mb-4">
           <h1 id="totalBudget">$0.00</h1>
 
@@ -162,7 +159,6 @@
           </div>
         </div>
 
-        <!-- Budgets -->
         <div id="budgetList"></div>
       </main>
     </div>
@@ -170,7 +166,6 @@
     <script>
       class BudgetsApp {
         constructor() {
-          // ── Session Guard ─────────────────────────────────────
           this._session = JSON.parse(localStorage.getItem("userAccount"));
           if (!this._session || !this._session.email) {
             window.location.href = "login.html";
@@ -189,11 +184,6 @@
           this._initUI();
         }
 
-        // ── Data Methods ──────────────────────────────────────────
-        /**
-         * Calculates the spent amount for each budget by cross-referencing
-         * expense transactions against budget categories.
-         */
         _calculateSpent(budgets, transactions) {
           budgets.forEach((budget) => {
             budget.spent = transactions.reduce((sum, t) => {
@@ -205,7 +195,6 @@
           });
         }
 
-        // ── UI Methods ────────────────────────────────────────────
         _initUI() {
           document.getElementById("userNameDisplay").innerText = this._session.name;
           document.getElementById("userAvatar").innerText =
@@ -271,7 +260,6 @@
         }
       }
 
-      // Bootstrap
       new BudgetsApp();
     </script>
   </body>

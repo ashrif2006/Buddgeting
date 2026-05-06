@@ -55,7 +55,6 @@
 <script>
   class GoalsApp {
     constructor() {
-      // ── Session Guard ─────────────────────────────────────
       this._session = JSON.parse(localStorage.getItem("userAccount"));
       if (!this._session) { window.location.href = "login.html"; return; }
 
@@ -71,7 +70,6 @@
       this._initUI();
     }
 
-    // ── UI Methods ────────────────────────────────────────────
     _initUI() {
       document.getElementById("userName").innerText    = this._session.name;
       document.getElementById("userAvatar").innerText = this._session.name.charAt(0).toUpperCase();
@@ -120,7 +118,6 @@
     }
   }
 
-  // Bootstrap
   new GoalsApp();
 </script>
 </body>

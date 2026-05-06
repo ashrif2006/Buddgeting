@@ -63,7 +63,6 @@
   </head>
   <body>
     <div class="d-flex">
-      <!-- Sidebar -->
       <nav class="sidebar">
         <div class="text-center mb-5">
           <div
@@ -110,7 +109,6 @@
         </div>
       </nav>
 
-      <!-- Main Content -->
       <main class="flex-grow-1 p-5">
         <div class="d-flex justify-content-between align-items-center mb-5">
           <h3 class="fw-bold">Financial Overview</h3>
@@ -119,7 +117,6 @@
           </button>
         </div>
 
-        <!-- Dashboard Stats -->
         <div class="row g-4 mb-5">
           <div class="col-md-4">
             <div class="stat-card shadow-sm bg-white text-center">
@@ -141,10 +138,8 @@
           </div>
         </div>
 
-        <!-- Recent Transactions -->
         <h5 class="fw-bold mb-4">Recent Transactions</h5>
         <div id="recentTransactionsList">
-          <!-- سيتم ملؤه بواسطة JavaScript -->
         </div>
       </main>
     </div>
@@ -152,14 +147,12 @@
     <script>
       class DashboardApp {
         constructor() {
-          // ── Session Guard ─────────────────────────────────────
           this._session = JSON.parse(localStorage.getItem("userAccount"));
           if (!this._session) {
             window.location.href = "login.html";
             return;
           }
 
-          // ── Load User Data ────────────────────────────────────
           const allUsers = JSON.parse(localStorage.getItem("allUsers")) || [];
           this._user = allUsers.find((u) => u.email === this._session.email);
 
@@ -167,9 +160,7 @@
           this._initEvents();
         }
 
-        // ── UI Methods ────────────────────────────────────────────
         _initUI() {
-          // Populate sidebar
           document.getElementById("userName").innerText = this._session.name;
           document.getElementById("userAvatar").innerText = this._session.name
             .charAt(0)
@@ -222,20 +213,17 @@
           `).join("");
         }
 
-        // ── Data Methods ──────────────────────────────────────────
         logout() {
           localStorage.removeItem("userAccount");
           window.location.href = "login.html";
         }
 
-        // ── Event Initialization ──────────────────────────────────
         _initEvents() {
           const logoutBtn = document.getElementById("logoutBtn");
           if (logoutBtn) logoutBtn.addEventListener("click", () => this.logout());
         }
       }
 
-      // Bootstrap
       const app = new DashboardApp();
     </script>
   </body>

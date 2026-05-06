@@ -52,7 +52,6 @@
 <script>
   class CreateGoalApp {
     constructor() {
-      // ── Session Guard ─────────────────────────────────────
       this._session = JSON.parse(localStorage.getItem("userAccount"));
       if (!this._session) { window.location.href = "login.html"; return; }
 
@@ -60,7 +59,6 @@
       this._initEvents();
     }
 
-    // ── UI Methods ────────────────────────────────────────────
     _cycleEmoji() {
       const el      = document.getElementById("goalEmoji");
       const current = el.innerText;
@@ -68,7 +66,6 @@
       el.innerText  = this._emojis[nextIdx];
     }
 
-    // ── Data Methods ──────────────────────────────────────────
     _saveGoal(name, target, initial, deadline, icon) {
       let allUsers  = JSON.parse(localStorage.getItem("allUsers")) || [];
       const userIdx = allUsers.findIndex((u) => u.email === this._session.email);
@@ -90,13 +87,10 @@
       window.location.href = "goals.html";
     }
 
-    // ── Event Initialization ──────────────────────────────────
     _initEvents() {
-      // Emoji picker button
       document.getElementById("emojiPickerBtn")
         .addEventListener("click", () => this._cycleEmoji());
 
-      // Form submit
       document.getElementById("goalForm")
         .addEventListener("submit", (e) => {
           e.preventDefault();
@@ -115,7 +109,6 @@
     }
   }
 
-  // Bootstrap
   new CreateGoalApp();
 </script>
 </body>

@@ -192,7 +192,6 @@
               />
             </div>
 
-            <!-- حقل الفئات العادي -->
             <div id="categoryGroup" class="mb-3">
               <label class="form-label small fw-bold text-muted"
                 >CATEGORY</label
@@ -205,7 +204,6 @@
               </select>
             </div>
 
-            <!-- حقل اختيار الهدف (مخفي افتراضياً) -->
             <div id="goalGroup" class="mb-3" style="display: none">
               <label class="form-label small fw-bold text-muted"
                 >SELECT GOAL</label
@@ -233,7 +231,6 @@
     <script>
       class AddTransactionApp {
         constructor() {
-          // ── Session Guard ─────────────────────────────────────
           this._session = JSON.parse(localStorage.getItem("userAccount"));
           if (!this._session) { window.location.href = "login.html"; return; }
 
@@ -242,7 +239,6 @@
           this._initEvents();
         }
 
-        // ── UI Methods ────────────────────────────────────────────
         _initUI() {
           document.getElementById("userName").innerText    = this._session.name;
           document.getElementById("userAvatar").innerText = this._session.name.charAt(0).toUpperCase();
@@ -287,7 +283,6 @@
           }
         }
 
-        // ── Data Methods ──────────────────────────────────────────
         _saveTransaction() {
           const amountVal = parseFloat(
             document.getElementById("amountField").value.replace(/[$,]/g, "")
@@ -318,7 +313,6 @@
 
           allUsers[userIdx].transactions.push(newTransaction);
 
-          // Auto-update the matching Goal's current value
           if (type === "saving") {
             const goal = allUsers[userIdx].goals.find((g) => g.name === category);
             if (goal) goal.current = Number(goal.current || 0) + amountVal;
@@ -328,22 +322,18 @@
           window.location.href = "transactions.html";
         }
 
-        // ── Event Initialization ──────────────────────────────────
         _initEvents() {
-          // Type-toggle buttons
           document.querySelectorAll(".type-btn").forEach((btn) => {
             const type = btn.classList.contains("expense") ? "expense"
                        : btn.classList.contains("income")  ? "income" : "saving";
             btn.addEventListener("click", () => this._setActiveType(btn, type));
           });
 
-          // Save button
           document.getElementById("saveBtn")
             .addEventListener("click", () => this._saveTransaction());
         }
       }
 
-      // Bootstrap
       new AddTransactionApp();
     </script>
   </body>
