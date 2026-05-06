@@ -1,0 +1,74 @@
+{% load static %}
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="{% static 'tracker/style.css' %}" />
+    <title>Login | BudgetWise</title>
+  </head>
+  <body>
+    <div class="auth-container">
+      <div class="card">
+        <h2>Welcome Back</h2>
+        <!-- التعديل هنا: ضفنا الـ method والـ action -->
+        <form method="POST" action="{% url 'login' %}">
+          {% csrf_token %} <!-- ده بيحمي الفورم من الاختراق ومش هيشتغل من غيره -->
+          
+          <div class="field">
+            <label>Email Address</label>
+            <!-- مهم جداً الـ name="username" عشان دجانجو يعرف يقرأه -->
+            <input type="text" name="username" placeholder="Enter your email" required />
+          </div>
+          
+          <div class="field">
+            <label>Password</label>
+            <input type="password" name="password" placeholder="********" required />
+          </div>
+          
+          <button type="submit" class="btn">Login Now</button>
+        </form>
+
+        {% if error %}
+                <p style="color: red; margin-top: 10px;">{{ error }}</p>
+        {% endif %}
+        
+        <p class="switch-page">
+          New user? <a href="{% url 'signup' %}"> Create an account</a>
+        </p>
+      </div>
+
+      <!-- امسح الـ script القديم خالص ملوش لازمة دلوقتي -->
+    </div>
+    {% comment %} <script>
+      document
+        .getElementById("loginForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          const email = document.getElementById("loginEmail").value;
+          const password = document.getElementById("loginPass").value;
+
+          let allUsers = JSON.parse(localStorage.getItem("allUsers")) || [];
+
+
+          const user = allUsers.find(
+            (u) => u.email === email && u.password === password,
+          );
+
+          if (user) {
+            localStorage.setItem(
+              "userAccount",
+              JSON.stringify({
+                name: user.name,
+                email: user.email,
+              }),
+            );
+
+            window.location.href ="{% url 'home' %}";
+          } else {
+            alert("Invalid email or password!");
+          }
+        });
+    </script> {% endcomment %}
+  </body>
+</html>

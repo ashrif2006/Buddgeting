@@ -1,0 +1,65 @@
+/* الاستايل الذي قدمته */
+:root {
+    --dark-blue: #0f172a;
+    --card-bg: #1e293b;
+    --cyan: #38bdf8;
+    --green: #2ecc71;
+    --red: #f87171;
+}
+
+body {
+    background-color: var(--dark-blue);
+    color: white;
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+}
+
+.auth-container { height: 100vh; display: flex; align-items: center; justify-content: center; }
+.card { background: var(--card-bg); padding: 30px; border-radius: 15px; width: 350px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+h2 { text-align: center; color: var(--cyan); margin-bottom: 25px; }
+
+.field { margin-bottom: 20px; }
+label { display: block; font-size: 0.85rem; color: #94a3b8; margin-bottom: 5px; }
+input, select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #334155; background: #334155; color: white; box-sizing: border-box; outline: none; }
+
+.btn { width: 100%; padding: 12px; background: var(--cyan); border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+.btn:hover { opacity: 0.8; }
+.success-btn { background: var(--green); color: white; }
+
+.tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+.tab-btn { flex: 1; padding: 10px; background: #334155; border: none; color: white; cursor: pointer; border-radius: 8px; font-size: 0.8rem; }
+.tab-btn.active { background: var(--cyan); color: #000; font-weight: bold; }
+
+.switch-page { text-align: center; font-size: 0.8rem; margin-top: 15px; }
+.switch-page a { color: var(--cyan); text-decoration: none; }
+
+/* إضافات خاصة بصفحة الميزانية بناءً على الصورة image_a8b861.jpg */
+.budget-icon-section {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.icon-box {
+    width: 70px;
+    height: 70px;
+    background: rgba(56, 189, 248, 0.1);
+    border: 2px dashed var(--cyan);
+    border-radius: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto 10px;
+    font-size: 2rem;
+}
+
+.icon-label {
+    font-size: 0.75rem;
+    color: var(--cyan);
+    cursor: pointer;
+}
+
+/* تحسين شكل input date في المتصفحات */
+input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    cursor: pointer;
+}

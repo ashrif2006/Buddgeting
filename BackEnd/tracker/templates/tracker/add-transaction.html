@@ -1,0 +1,328 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add Transaction | BudgetWise</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <style>
+      :root {
+        --main-blue: #4d6ef6;
+        --bg-light: #f4f7fe;
+      }
+      body {
+        background-color: var(--bg-light);
+        font-family: "Segoe UI", sans-serif;
+      }
+      .sidebar {
+        min-width: 260px;
+        background: white;
+        height: 100vh;
+        position: sticky;
+        top: 0;
+        border-right: 1px solid #eef0f7;
+        padding: 40px 20px;
+      }
+      .nav-link {
+        color: #8e92a4;
+        padding: 12px 20px;
+        border-radius: 12px;
+        text-decoration: none;
+        display: block;
+      }
+      .form-card {
+        background: white;
+        border-radius: 25px;
+        padding: 40px;
+        max-width: 600px;
+        margin: 0 auto;
+        border: none;
+      }
+      .type-toggle {
+        background: #f0f3ff;
+        border-radius: 15px;
+        padding: 5px;
+        display: flex;
+      }
+      .type-btn {
+        flex: 1;
+        border: none;
+        padding: 10px;
+        border-radius: 12px;
+        font-weight: 600;
+        transition: 0.3s;
+        background: transparent;
+        color: #8e92a4;
+      }
+      .type-btn.active.expense {
+        background: #ffebee;
+        color: #c62828;
+      }
+      .type-btn.active.income {
+        background: #e8f5e9;
+        color: #2e7d32;
+      }
+      .form-control,
+      .form-select {
+        border: none;
+        background: #f8f9fe;
+        padding: 15px;
+        border-radius: 12px;
+      }
+      .amount-input {
+        font-size: 3rem;
+        font-weight: bold;
+        text-align: center;
+        color: var(--main-blue);
+        border: none;
+        background: transparent;
+        width: 100%;
+        outline: none;
+      }
+      .btn-save {
+        background: var(--main-blue);
+        border: none;
+        padding: 15px;
+        border-radius: 15px;
+        font-weight: bold;
+        transition: 0.3s;
+        color: white;
+      }
+      .btn-save:hover {
+        background: #3b5bdb;
+        transform: translateY(-2px);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="d-flex">
+      <!-- Sidebar -->
+      <nav class="sidebar">
+        <div class="text-center mb-5">
+          <div
+            id="userAvatar"
+            style="
+              width: 60px;
+              height: 60px;
+              background: var(--main-blue);
+              color: white;
+              border-radius: 50%;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-size: 1.5rem;
+              font-weight: bold;
+              margin: 0 auto 15px;
+            "
+          >
+            ?
+          </div>
+          <h6 class="fw-bold mb-0" id="userName">Loading..</h6>
+        </div>
+        <div class="nav flex-column">
+          <a href="{% url 'home' %}" class="nav-link"
+            ><i class="fas fa-home me-2"></i> Home</a
+          >
+          <a href="{% url 'transactions' %}" class="nav-link"
+            ><i class="fas fa-exchange-alt me-2"></i> Trans.</a
+          >
+        </div>
+      </nav>
+
+      <!-- Main Content -->
+      <main class="flex-grow-1 p-4 p-lg-5">
+        <div class="text-center mb-4 position-relative">
+          <a
+            href="transactions.html"
+            class="position-absolute start-0 text-muted"
+            ><i class="fas fa-times fs-4"></i
+          ></a>
+          <h4 class="fw-bold">Add Transaction</h4>
+        </div>
+
+        <div class="form-card shadow-sm">
+          <!-- Type Toggle -->
+          <div class="type-toggle mb-4">
+            <button
+              class="type-btn active expense"
+              onclick="toggleType(this, 'expense')"
+            >
+              <i class="fas fa-arrow-down me-2"></i>Expense
+            </button>
+            <button
+              class="type-btn income"
+              onclick="toggleType(this, 'income')"
+            >
+              <i class="fas fa-arrow-up me-2"></i>Income
+            </button>
+          </div>
+
+          <!-- Amount Input -->
+          <div class="text-center mb-4">
+            <label class="text-muted small text-uppercase fw-bold d-block mb-1"
+              >Amount</label
+            >
+            <input
+              type="text"
+              name="amount"
+              class="amount-input"
+              value="$0.00"
+              id="amountField"
+              onfocus="if (this.value == '$0.00') this.value = '';"
+              onblur="if (this.value == '') this.value = '$0.00';"
+            />
+          </div>
+
+          <!-- Transaction Form -->
+          <form id="transForm" method="POST" action="{% url 'add_transaction' %}">
+            {% csrf_token %}
+            <input type="hidden" name="type" id="typeInput" value="expense">
+            <div class="mb-3">
+              <label class="form-label small fw-bold text-muted"
+                >DESCRIPTION</label
+              >
+              <input
+                type="text"
+                id="descInput"
+                name = "description"
+                class="form-control"
+                placeholder="e.g. Lunch at restaurant"
+              />
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-bold text-muted"
+                >CATEGORY</label
+              >
+              <select class="form-select" id="categorySelect">
+                <option>Food & Dining</option>
+                <option>Transportation</option>
+                <option>Shopping</option>
+                <option>Entertainment</option>
+                <option>Bills</option>
+              </select>
+            </div>
+            <div class="mb-4">
+              <label class="form-label small fw-bold text-muted">DATE</label>
+              <input type="date" class="form-control" id="dateInput" />
+            </div>
+            <button
+              type="submit"
+              class="btn btn-primary w-100 btn-save"
+              {% comment %} onclick="saveTransaction()" {% endcomment %}
+            >
+              Save Transaction
+            </button>
+          </form>
+        </div>
+      </main>
+    </div>
+
+    {% comment %} <script>
+      // 1. تحديث بيانات المستخدم عند فتح الصفحة
+      window.onload = function () {
+        const session = JSON.parse(localStorage.getItem("userAccount"));
+        if (session) {
+          document.getElementById("userName").innerText = session.name;
+          document.getElementById("userAvatar").innerText = session.name
+            .charAt(0)
+            .toUpperCase();
+          // وضع تاريخ اليوم كقيمة افتراضية
+          document.getElementById("dateInput").valueAsDate = new Date();
+        } else {
+          window.location.href = "login.html"; // لو مش مسجل دخول يرجعه
+        }
+      };
+
+      // 2. تغيير نوع العملية (Expense / Income)
+      function toggleType(btn, type) {
+        document
+          .querySelectorAll(".type-btn")
+          .forEach((b) => b.classList.remove("active", "expense", "income"));
+        btn.classList.add("active", type);
+
+        document.getElementById("typeInput").value = type;
+      }
+
+      function saveTransaction() {
+        const session = JSON.parse(localStorage.getItem("userAccount"));
+
+        if (!session || !session.email) {
+          window.location.href = "login.html";
+          return;
+        }
+
+        let amountVal = document.getElementById("amountField").value;
+        amountVal = parseFloat(amountVal.replace(/[$,]/g, ""));
+
+        const description = document.getElementById("descInput").value.trim();
+        const category = document.getElementById("categorySelect").value;
+        const date = document.getElementById("dateInput").value;
+
+        const activeBtn = document.querySelector(".type-btn.active");
+        if (!activeBtn) {
+          alert("Please select transaction type");
+          return;
+        }
+
+        const type = activeBtn.classList.contains("expense")
+          ? "expense"
+          : "income";
+
+        if (isNaN(amountVal) || amountVal <= 0) {
+          alert("Please enter a valid amount");
+          return;
+        }
+
+        if (!description || !date) {
+          alert("Please fill all fields");
+          return;
+        }
+
+        let allUsers = JSON.parse(localStorage.getItem("allUsers")) || [];
+        const userIdx = allUsers.findIndex((u) => u.email === session.email);
+
+        if (userIdx === -1) return;
+
+        if (!allUsers[userIdx].transactions) {
+          allUsers[userIdx].transactions = [];
+        }
+
+        if (!allUsers[userIdx].budgets) {
+          allUsers[userIdx].budgets = [];
+        }
+
+        const newTrans = {
+          id: Date.now(),
+          amount: amountVal,
+          category,
+          type,
+          date: new Date(date).toISOString(),
+          description,
+        };
+
+        allUsers[userIdx].transactions.push(newTrans);
+
+        if (type === "expense") {
+          const budget = allUsers[userIdx].budgets.find(
+            (b) => b.category === category,
+          );
+          if (budget) {
+            budget.spent += amountVal;
+          }
+        }
+
+        localStorage.setItem("allUsers", JSON.stringify(allUsers));
+
+        window.location.href = "transactions.html";
+      }
+    </script> {% endcomment %}
+  </body>
+</html>
