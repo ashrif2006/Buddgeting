@@ -30,35 +30,55 @@
       </div>
     </div>
     <script>
-      document
-        .getElementById("loginForm")
-        .addEventListener("submit", function (e) {
-          e.preventDefault();
+      class LoginApp {
+        constructor() {
+          this._allUsers = JSON.parse(localStorage.getItem("allUsers")) || [];
+          this._initEvents();
+        }
 
-          const email = document.getElementById("loginEmail").value;
-          const password = document.getElementById("loginPass").value;
-
-          let allUsers = JSON.parse(localStorage.getItem("allUsers")) || [];
-
-
-          const user = allUsers.find(
-            (u) => u.email === email && u.password === password,
+        // ── Data Methods ──────────────────────────────────────────
+        _findUser(email, password) {
+          return this._allUsers.find(
+            (u) => u.email === email && u.password === password
           );
+        }
+
+        _createSession(user) {
+          localStorage.setItem(
+            "userAccount",
+            JSON.stringify({ name: user.name, email: user.email })
+          );
+        }
+
+        // ── UI Methods ────────────────────────────────────────────
+        _showError(message) {
+          alert(message);
+        }
+
+        // ── Event Initialization ──────────────────────────────────
+        _initEvents() {
+          document
+            .getElementById("loginForm")
+            .addEventListener("submit", (e) => this._handleSubmit(e));
+        }
+
+        _handleSubmit(e) {
+          e.preventDefault();
+          const email    = document.getElementById("loginEmail").value.trim();
+          const password = document.getElementById("loginPass").value;
+          const user     = this._findUser(email, password);
 
           if (user) {
-            localStorage.setItem(
-              "userAccount",
-              JSON.stringify({
-                name: user.name,
-                email: user.email,
-              }),
-            );
-
+            this._createSession(user);
             window.location.href = "./home.html";
           } else {
-            alert("Invalid email or password!");
+            this._showError("Invalid email or password!");
           }
-        });
+        }
+      }
+
+      // Bootstrap
+      new LoginApp();
     </script>
   </body>
 </html>

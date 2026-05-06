@@ -33,39 +33,73 @@
       </div>
     </div>
     <script>
-      document
-        .getElementById("signupForm")
-        .addEventListener("submit", function (e) {
-          e.preventDefault();
+      class SignupApp {
+        constructor() {
+          this._allUsers = JSON.parse(localStorage.getItem("allUsers")) || [];
+          this._initEvents();
+        }
 
-          const name = document.getElementById("fullName").value;
-          const email = document.getElementById("email").value;
+        // ── Data Methods ──────────────────────────────────────────
+        _isEmailTaken(email) {
+          return this._allUsers.some((u) => u.email === email);
+        }
+
+        _createUser(name, email, password) {
+          const newUser = {
+            name,
+            email,
+            password,
+            transactions: [],
+            budgets: [],
+            goals: [],
+          };
+          this._allUsers.push(newUser);
+          localStorage.setItem("allUsers", JSON.stringify(this._allUsers));
+        }
+
+        // ── UI Methods ────────────────────────────────────────────
+        _showError(elementId, message) {
+          const el = document.getElementById(elementId);
+          if (el) el.innerText = message;
+        }
+
+        _clearErrors() {
+          ["nameError", "emailError", "passError"].forEach((id) =>
+            this._showError(id, "")
+          );
+        }
+
+        // ── Event Initialization ──────────────────────────────────
+        _initEvents() {
+          document
+            .getElementById("signupForm")
+            .addEventListener("submit", (e) => this._handleSubmit(e));
+        }
+
+        _handleSubmit(e) {
+          e.preventDefault();
+          this._clearErrors();
+
+          const name     = document.getElementById("fullName").value.trim();
+          const email    = document.getElementById("email").value.trim();
           const password = document.getElementById("password").value;
 
+          // Validation
+          if (!name) return this._showError("nameError", "Name is required.");
+          if (!email) return this._showError("emailError", "Email is required.");
+          if (this._isEmailTaken(email))
+            return this._showError("emailError", "This email is already registered!");
+          if (password.length < 6)
+            return this._showError("passError", "Password must be at least 6 characters.");
 
-          let allUsers = JSON.parse(localStorage.getItem("allUsers")) || [];
-
-
-          if (allUsers.find((u) => u.email === email)) {
-            return alert("This email is already registered!");
-          }
-
-
-          const newUser = {
-            name: name,
-            email: email,
-            password: password,
-            transactions: [], 
-            budgets: [],
-            goals: [] 
-          };
-
-          allUsers.push(newUser);
-          localStorage.setItem("allUsers", JSON.stringify(allUsers));
-
+          this._createUser(name, email, password);
           alert("Account created successfully!");
           window.location.href = "login.html";
-        });
+        }
+      }
+
+      // Bootstrap
+      new SignupApp();
     </script>
   </body>
 </html>

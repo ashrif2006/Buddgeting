@@ -4,74 +4,199 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Add Transaction | BudgetWise</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
     <style>
-      :root { --main-blue: #4d6ef6; --bg-light: #f4f7fe; }
-      body { background-color: var(--bg-light); font-family: "Segoe UI", sans-serif; }
-      .sidebar { min-width: 260px; background: white; height: 100vh; position: sticky; top: 0; border-right: 1px solid #eef0f7; padding: 40px 20px; }
-      .nav-link { color: #8e92a4; padding: 12px 20px; border-radius: 12px; text-decoration: none; display: block; }
-      .nav-link.active { background-color: #f0f3ff; color: var(--main-blue); }
-      .form-card { background: white; border-radius: 25px; padding: 40px; max-width: 600px; margin: 0 auto; }
-      .type-toggle { background: #f0f3ff; border-radius: 15px; padding: 5px; display: flex; }
-      .type-btn { flex: 1; border: none; padding: 10px; border-radius: 12px; font-weight: 600; transition: 0.3s; background: transparent; color: #8e92a4; }
-      .type-btn.active.expense { background: #ffebee; color: #c62828; }
-      .type-btn.active.income { background: #e8f5e9; color: #2e7d32; }
-      .type-btn.active.saving { background: #e3f2fd; color: #0d47a1; }
-      .form-control, .form-select { border: none; background: #f8f9fe; padding: 15px; border-radius: 12px; }
-      .amount-input { font-size: 3rem; font-weight: bold; text-align: center; color: var(--main-blue); border: none; background: transparent; width: 100%; outline: none; }
-      .btn-save { background: var(--main-blue); border: none; padding: 15px; border-radius: 15px; font-weight: bold; color: white; transition: 0.3s; }
-      .btn-save:hover { background: #3b5bdb; transform: translateY(-2px); }
+      :root {
+        --main-blue: #4d6ef6;
+        --bg-light: #f4f7fe;
+      }
+      body {
+        background-color: var(--bg-light);
+        font-family: "Segoe UI", sans-serif;
+      }
+      .sidebar {
+        min-width: 260px;
+        background: white;
+        height: 100vh;
+        position: sticky;
+        top: 0;
+        border-right: 1px solid #eef0f7;
+        padding: 40px 20px;
+      }
+      .nav-link {
+        color: #8e92a4;
+        padding: 12px 20px;
+        border-radius: 12px;
+        text-decoration: none;
+        display: block;
+      }
+      .nav-link.active {
+        background-color: #f0f3ff;
+        color: var(--main-blue);
+      }
+      .form-card {
+        background: white;
+        border-radius: 25px;
+        padding: 40px;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+      .type-toggle {
+        background: #f0f3ff;
+        border-radius: 15px;
+        padding: 5px;
+        display: flex;
+      }
+      .type-btn {
+        flex: 1;
+        border: none;
+        padding: 10px;
+        border-radius: 12px;
+        font-weight: 600;
+        transition: 0.3s;
+        background: transparent;
+        color: #8e92a4;
+      }
+      .type-btn.active.expense {
+        background: #ffebee;
+        color: #c62828;
+      }
+      .type-btn.active.income {
+        background: #e8f5e9;
+        color: #2e7d32;
+      }
+      .type-btn.active.saving {
+        background: #e3f2fd;
+        color: #0d47a1;
+      }
+      .form-control,
+      .form-select {
+        border: none;
+        background: #f8f9fe;
+        padding: 15px;
+        border-radius: 12px;
+      }
+      .amount-input {
+        font-size: 3rem;
+        font-weight: bold;
+        text-align: center;
+        color: var(--main-blue);
+        border: none;
+        background: transparent;
+        width: 100%;
+        outline: none;
+      }
+      .btn-save {
+        background: var(--main-blue);
+        border: none;
+        padding: 15px;
+        border-radius: 15px;
+        font-weight: bold;
+        color: white;
+        transition: 0.3s;
+      }
+      .btn-save:hover {
+        background: #3b5bdb;
+        transform: translateY(-2px);
+      }
     </style>
   </head>
   <body>
     <div class="d-flex">
       <nav class="sidebar">
         <div class="text-center mb-5">
-          <div id="userAvatar" style="width: 60px; height: 60px; background: var(--main-blue); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold; margin: 0 auto 15px;">?</div>
+          <div
+            id="userAvatar"
+            style="
+              width: 60px;
+              height: 60px;
+              background: var(--main-blue);
+              color: white;
+              border-radius: 50%;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-size: 1.5rem;
+              font-weight: bold;
+              margin: 0 auto 15px;
+            "
+          >
+            ?
+          </div>
           <h6 class="fw-bold mb-0" id="userName">Loading..</h6>
         </div>
         <div class="nav flex-column">
-          <a href="home.html" class="nav-link"><i class="fas fa-home me-2"></i> Home</a>
-          <a href="transactions.html" class="nav-link active"><i class="fas fa-exchange-alt me-2"></i> Trans.</a>
+          <a href="home.html" class="nav-link"
+            ><i class="fas fa-home me-2"></i> Home</a
+          >
+          <a href="transactions.html" class="nav-link active"
+            ><i class="fas fa-exchange-alt me-2"></i> Trans.</a
+          >
         </div>
       </nav>
 
       <main class="flex-grow-1 p-4 p-lg-5">
         <div class="text-center mb-4 position-relative">
-          <a href="transactions.html" class="position-absolute start-0 text-muted"><i class="fas fa-times fs-4"></i></a>
+          <a
+            href="transactions.html"
+            class="position-absolute start-0 text-muted"
+            ><i class="fas fa-times fs-4"></i
+          ></a>
           <h4 class="fw-bold">Add Transaction</h4>
         </div>
 
         <div class="form-card shadow-sm">
           <div class="type-toggle mb-4">
-            <button class="type-btn active expense" onclick="toggleType(this, 'expense')">
+            <button class="type-btn active expense">
               <i class="fas fa-arrow-down me-2"></i>Expense
             </button>
-            <button class="type-btn income" onclick="toggleType(this, 'income')">
+            <button class="type-btn income">
               <i class="fas fa-arrow-up me-2"></i>Income
             </button>
-            <button class="type-btn saving" onclick="toggleType(this, 'saving')">
+            <button class="type-btn saving">
               <i class="fas fa-piggy-bank me-2"></i>Saving
             </button>
           </div>
 
           <div class="text-center mb-4">
-            <label class="text-muted small text-uppercase fw-bold d-block mb-1">Amount</label>
-            <input type="text" class="amount-input" value="$0.00" id="amountField" 
-                   onfocus="if (this.value == '$0.00') this.value = '';" 
-                   onblur="if (this.value == '') this.value = '$0.00';" />
+            <label class="text-muted small text-uppercase fw-bold d-block mb-1"
+              >Amount</label
+            >
+            <input
+              type="text"
+              class="amount-input"
+              value="$0.00"
+              id="amountField"
+              onfocus="if (this.value == '$0.00') this.value = '';"
+              onblur="if (this.value == '') this.value = '$0.00';"
+            />
           </div>
 
           <form id="transForm">
             <div class="mb-3">
-              <label class="form-label small fw-bold text-muted">DESCRIPTION</label>
-              <input type="text" id="descInput" class="form-control" placeholder="e.g. Monthly Salary or Goal Saving" />
+              <label class="form-label small fw-bold text-muted"
+                >DESCRIPTION</label
+              >
+              <input
+                type="text"
+                id="descInput"
+                class="form-control"
+                placeholder="e.g. Monthly Salary or Goal Saving"
+              />
             </div>
 
             <!-- حقل الفئات العادي -->
             <div id="categoryGroup" class="mb-3">
-              <label class="form-label small fw-bold text-muted">CATEGORY</label>
+              <label class="form-label small fw-bold text-muted"
+                >CATEGORY</label
+              >
               <select class="form-select" id="categorySelect">
                 <option>Food & Dining</option>
                 <option>Transportation</option>
@@ -81,8 +206,10 @@
             </div>
 
             <!-- حقل اختيار الهدف (مخفي افتراضياً) -->
-            <div id="goalGroup" class="mb-3" style="display: none;">
-              <label class="form-label small fw-bold text-muted">SELECT GOAL</label>
+            <div id="goalGroup" class="mb-3" style="display: none">
+              <label class="form-label small fw-bold text-muted"
+                >SELECT GOAL</label
+              >
               <select class="form-select" id="goalSelect"></select>
             </div>
 
@@ -91,7 +218,11 @@
               <input type="date" class="form-control" id="dateInput" />
             </div>
 
-            <button type="button" class="btn btn-primary w-100 btn-save" onclick="saveTransaction()">
+            <button
+              type="button"
+              id="saveBtn"
+              class="btn btn-primary w-100 btn-save"
+            >
               Save Transaction
             </button>
           </form>
@@ -100,85 +231,120 @@
     </div>
 
     <script>
-      window.onload = function () {
-        const session = JSON.parse(localStorage.getItem("userAccount"));
-        if (!session) { window.location.href = "login.html"; return; }
-        
-        document.getElementById("userName").innerText = session.name;
-        document.getElementById("userAvatar").innerText = session.name.charAt(0).toUpperCase();
-        document.getElementById("dateInput").valueAsDate = new Date();
-      };
+      class AddTransactionApp {
+        constructor() {
+          // ── Session Guard ─────────────────────────────────────
+          this._session = JSON.parse(localStorage.getItem("userAccount"));
+          if (!this._session) { window.location.href = "login.html"; return; }
 
-      function toggleType(btn, type) {
-        document.querySelectorAll(".type-btn").forEach(b => b.classList.remove("active", "expense", "income", "saving"));
-        btn.classList.add("active", type);
+          this._selectedType = "expense";
+          this._initUI();
+          this._initEvents();
+        }
 
-        const categoryGroup = document.getElementById("categoryGroup");
-        const goalGroup = document.getElementById("goalGroup");
-        const categorySelect = document.getElementById("categorySelect");
+        // ── UI Methods ────────────────────────────────────────────
+        _initUI() {
+          document.getElementById("userName").innerText    = this._session.name;
+          document.getElementById("userAvatar").innerText = this._session.name.charAt(0).toUpperCase();
+          document.getElementById("dateInput").valueAsDate = new Date();
+        }
 
-        const session = JSON.parse(localStorage.getItem("userAccount"));
-        const allUsers = JSON.parse(localStorage.getItem("allUsers")) || [];
-        const user = allUsers.find(u => u.email === session.email);
+        _setActiveType(clickedBtn, type) {
+          document.querySelectorAll(".type-btn").forEach((b) =>
+            b.classList.remove("active", "expense", "income", "saving")
+          );
+          clickedBtn.classList.add("active", type);
+          this._selectedType = type;
 
-        if (type === "saving") {
-          categoryGroup.style.display = "none";
-          goalGroup.style.display = "block";
+          const categoryGroup = document.getElementById("categoryGroup");
+          const goalGroup     = document.getElementById("goalGroup");
+          const categorySelect = document.getElementById("categorySelect");
+
+          if (type === "saving") {
+            categoryGroup.style.display = "none";
+            goalGroup.style.display     = "block";
+            this._populateGoalSelect();
+          } else {
+            categoryGroup.style.display = "block";
+            goalGroup.style.display     = "none";
+            categorySelect.innerHTML = type === "income"
+              ? `<option>Salary</option><option>Freelance</option><option>Gift</option>`
+              : `<option>Food &amp; Dining</option><option>Transportation</option><option>Shopping</option><option>Bills</option>`;
+          }
+        }
+
+        _populateGoalSelect() {
+          const allUsers = JSON.parse(localStorage.getItem("allUsers")) || [];
+          const user     = allUsers.find((u) => u.email === this._session.email);
           const goalSelect = document.getElementById("goalSelect");
-          if (user.goals && user.goals.length > 0) {
-            goalSelect.innerHTML = user.goals.map(g => `<option value="${g.name}">${g.name}</option>`).join("");
+
+          if (user && user.goals && user.goals.length > 0) {
+            goalSelect.innerHTML = user.goals
+              .map((g) => `<option value="${g.name}">${g.name}</option>`)
+              .join("");
           } else {
             goalSelect.innerHTML = `<option disabled selected>No goals found</option>`;
           }
-        } else {
-          categoryGroup.style.display = "block";
-          goalGroup.style.display = "none";
-          categorySelect.innerHTML = type === "income" 
-            ? `<option>Salary</option><option>Freelance</option><option>Gift</option>`
-            : `<option>Food & Dining</option><option>Transportation</option><option>Shopping</option><option>Bills</option>`;
         }
-      }
 
-      function saveTransaction() {
-        const session = JSON.parse(localStorage.getItem("userAccount"));
-        let allUsers = JSON.parse(localStorage.getItem("allUsers")) || [];
-        const userIdx = allUsers.findIndex(u => u.email === session.email);
+        // ── Data Methods ──────────────────────────────────────────
+        _saveTransaction() {
+          const amountVal = parseFloat(
+            document.getElementById("amountField").value.replace(/[$,]/g, "")
+          );
+          const description = document.getElementById("descInput").value.trim();
+          const date        = document.getElementById("dateInput").value;
+          const type        = this._selectedType;
+          const category    = type === "saving"
+            ? document.getElementById("goalSelect").value
+            : document.getElementById("categorySelect").value;
 
-        const amountVal = parseFloat(document.getElementById("amountField").value.replace(/[$,]/g, ""));
-        const description = document.getElementById("descInput").value.trim();
-        const date = document.getElementById("dateInput").value;
-        const activeBtn = document.querySelector(".type-btn.active");
-        
-        const type = activeBtn.classList.contains("expense") ? "expense" : 
-                     activeBtn.classList.contains("income") ? "income" : "saving";
-
-        const category = (type === "saving") 
-          ? document.getElementById("goalSelect").value 
-          : document.getElementById("categorySelect").value;
-
-        if (isNaN(amountVal) || amountVal <= 0 || !category) return alert("Please enter valid data");
-
-        const newTrans = {
-          id: Date.now(),
-          amount: amountVal,
-          category: category,
-          type: type,
-          date: new Date(date).toISOString(),
-          description: description
-        };
-
-        allUsers[userIdx].transactions.push(newTrans);
-
-        if (type === "saving") {
-          const goal = allUsers[userIdx].goals.find(g => g.name === category);
-          if (goal){
-            goal.current = Number(goal.current || 0) + amountVal;
+          if (isNaN(amountVal) || amountVal <= 0 || !category) {
+            return alert("Please enter valid data.");
           }
+
+          let allUsers  = JSON.parse(localStorage.getItem("allUsers")) || [];
+          const userIdx = allUsers.findIndex((u) => u.email === this._session.email);
+          if (userIdx === -1) return;
+
+          const newTransaction = {
+            id:          Date.now(),
+            amount:      amountVal,
+            category,
+            type,
+            date:        new Date(date).toISOString(),
+            description,
+          };
+
+          allUsers[userIdx].transactions.push(newTransaction);
+
+          // Auto-update the matching Goal's current value
+          if (type === "saving") {
+            const goal = allUsers[userIdx].goals.find((g) => g.name === category);
+            if (goal) goal.current = Number(goal.current || 0) + amountVal;
+          }
+
+          localStorage.setItem("allUsers", JSON.stringify(allUsers));
+          window.location.href = "transactions.html";
         }
 
-        localStorage.setItem("allUsers", JSON.stringify(allUsers));
-        window.location.href = "transactions.html";
+        // ── Event Initialization ──────────────────────────────────
+        _initEvents() {
+          // Type-toggle buttons
+          document.querySelectorAll(".type-btn").forEach((btn) => {
+            const type = btn.classList.contains("expense") ? "expense"
+                       : btn.classList.contains("income")  ? "income" : "saving";
+            btn.addEventListener("click", () => this._setActiveType(btn, type));
+          });
+
+          // Save button
+          document.getElementById("saveBtn")
+            .addEventListener("click", () => this._saveTransaction());
+        }
       }
+
+      // Bootstrap
+      new AddTransactionApp();
     </script>
   </body>
 </html>

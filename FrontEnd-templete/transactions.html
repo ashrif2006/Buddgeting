@@ -178,104 +178,84 @@
     </a>
 
     <script>
-      window.onload = function () {
-        const session = JSON.parse(localStorage.getItem("userAccount"));
+      class TransactionsApp {
+        constructor() {
+          // ── Session Guard ─────────────────────────────────────
+          this._session = JSON.parse(localStorage.getItem("userAccount"));
+          if (!this._session || !this._session.email) {
+            window.location.href = "login.html";
+            return;
+          }
 
-        if (!session || !session.email) {
-          window.location.href = "login.html";
-          return;
+          const allUsers = JSON.parse(localStorage.getItem("allUsers")) || [];
+          this._user = allUsers.find((u) => u.email === this._session.email);
+
+          if (!this._user) {
+            localStorage.removeItem("userAccount");
+            window.location.href = "login.html";
+            return;
+          }
+
+          this._initUI();
         }
 
-        document.getElementById("userNameDisplay").innerText = session.name;
-        document.getElementById("userAvatar").innerText = session.name
-          ? session.name.charAt(0).toUpperCase()
-          : "?";
+        // ── UI Methods ────────────────────────────────────────────
+        _initUI() {
+          document.getElementById("userNameDisplay").innerText = this._session.name;
+          document.getElementById("userAvatar").innerText =
+            this._session.name ? this._session.name.charAt(0).toUpperCase() : "?";
 
-        const allUsers = JSON.parse(localStorage.getItem("allUsers")) || [];
-        const user = allUsers.find((u) => u.email === session.email);
-
-        if (!user) {
-          localStorage.removeItem("userAccount");
-          window.location.href = "login.html";
-          return;
+          const transactions = this._user.transactions || [];
+          this._renderTransactions(transactions);
+          this._renderTotals(transactions);
         }
 
-        const transactions = user.transactions || [];
+        _renderTransactions(transactions) {
+          const container = document.getElementById("transactionsList");
 
-        renderTransactions(transactions);
-        calculateTotals(transactions);
-      };
+          if (transactions.length === 0) {
+            container.innerHTML = `<p class="text-muted">No transactions yet.</p>`;
+            return;
+          }
 
-      function renderTransactions(transactions) {
-        const container = document.getElementById("transactionsList");
-        container.innerHTML = "";
-
-        if (transactions.length === 0) {
-          container.innerHTML = `<p class="text-muted">No transactions yet.</p>`;
-          return;
+          container.innerHTML = transactions
+            .slice()
+            .reverse()
+            .map((t) => {
+              const icon       = t.type === "income" ? "💰" : t.type === "saving" ? "💾" : "💸";
+              const colorClass = t.type === "income" ? "text-success" : t.type === "saving" ? "text-primary" : "text-danger";
+              const sign       = t.type === "income" ? "+" : "-";
+              return `
+                <div class="trans-item d-flex align-items-center shadow-sm">
+                  <div class="icon-box bg-light me-3">${icon}</div>
+                  <div class="flex-grow-1">
+                    <h6 class="mb-0 fw-bold">${t.description}</h6>
+                    <small class="text-muted">${t.category} • ${this._formatDate(t.date)}</small>
+                  </div>
+                  <div class="${colorClass} fw-bold">${sign}$${Number(t.amount).toFixed(2)}</div>
+                </div>`;
+            })
+            .join("");
         }
 
-        let html = "";
-
-        transactions
-          .slice()
-          .reverse()
-          .forEach((t) => {
-            let icon = "💸";
-            let colorClass = "text-danger";
-            if (t.type === "income") {
-              icon = "💰";
-              colorClass = "text-success";
-            } else if (t.type === "saving") {
-              icon = "💾";
-              colorClass = "text-primary";
-            }
-            html += `
-        <div class="trans-item d-flex align-items-center shadow-sm">
-
-            <div class="icon-box bg-light me-3">
-                ${icon}
-            </div>
-
-            <div class="flex-grow-1">
-                <h6 class="mb-0 fw-bold">${t.description}</h6>
-                <small class="text-muted">
-                    ${t.category} • ${formatDate(t.date)}
-                </small>
-            </div>
-
-            <div class="${colorClass} fw-bold">
-                ${t.type === "income" ? "+" : "-"}$${Number(t.amount).toFixed(2)}
-            </div>
-
-        </div>
-        `;
+        _renderTotals(transactions) {
+          let income = 0, expenses = 0;
+          transactions.forEach((t) => {
+            if      (t.type === "income")  income   += Number(t.amount);
+            else if (t.type === "expense") expenses += Number(t.amount);
           });
+          document.getElementById("incomeTotal").innerText  = `+$${income.toFixed(2)}`;
+          document.getElementById("expenseTotal").innerText = `-$${expenses.toFixed(2)}`;
+        }
 
-        container.innerHTML = html;
+        // ── Data Methods ──────────────────────────────────────────
+        _formatDate(dateStr) {
+          return new Date(dateStr).toLocaleDateString();
+        }
       }
 
-      function calculateTotals(transactions) {
-        let income = 0;
-        let expenses = 0;
-        let saved = 0;
-
-        transactions.forEach((t) => {
-          if (t.type === "income") income += Number(t.amount);
-          else if (t.type === "expense") expenses += Number(t.amount);
-          else if (t.type === "saving") saved += Number(t.amount);
-        });
-
-        document.getElementById("incomeTotal").innerText =
-          "+$" + income.toFixed(2);
-        document.getElementById("expenseTotal").innerText =
-          "-$" + expenses.toFixed(2);
-      }
-
-      function formatDate(dateStr) {
-        const d = new Date(dateStr);
-        return d.toLocaleDateString();
-      }
+      // Bootstrap
+      new TransactionsApp();
     </script>
   </body>
 </html>

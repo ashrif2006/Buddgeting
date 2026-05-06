@@ -74,72 +74,109 @@
 </div>
 
 <script>
-    window.onload = function() {
-        const session = JSON.parse(localStorage.getItem("userAccount"));
-        const allUsers = JSON.parse(localStorage.getItem("allUsers")) || [];
-        const user = allUsers.find(u => u.email === session.email);
-        
-        if (!user) { window.location.href = 'login.html'; return; }
+  class ReportsApp {
+    constructor() {
+      // ── Session Guard ─────────────────────────────────────
+      this._session = JSON.parse(localStorage.getItem("userAccount"));
+      if (!this._session) { window.location.href = "login.html"; return; }
 
-        const transactions = user.transactions || [];
-        
-        // 1. حساب المصاريف لكل فئة
-        const categoryData = {};
-        let totalIncome = 0;
-        let totalExpense = 0;
+      const allUsers = JSON.parse(localStorage.getItem("allUsers")) || [];
+      this._user = allUsers.find((u) => u.email === this._session.email);
 
-        transactions.forEach(t => {
-            const amount = Number(t.amount);
-            if (t.type === 'expense') {
-                categoryData[t.category] = (categoryData[t.category] || 0) + amount;
-                totalExpense += amount;
-            } else if (t.type === 'income') {
-                totalIncome += amount;
-            } else if (t.type === 'saving') {
-                totalExpense += amount; // الادخار يُعتبر "مصروف" من الرصيد المتاح
-            }
-        });
+      if (!this._user) { window.location.href = "login.html"; return; }
 
-        // 2. رسم Donut Chart (توزيع الفئات)
-        new Chart(document.getElementById('categoryChart'), {
-            type: 'doughnut',
-            data: {
-                labels: Object.keys(categoryData),
-                datasets: [{
-                    data: Object.values(categoryData),
-                    backgroundColor: ['#4d6ef6', '#00ab6b', '#ffb84d', '#ff5b5b', '#a6b1e1'],
-                    borderWidth: 0
-                }]
-            },
-            options: { cutout: '75%', plugins: { legend: { position: 'bottom' } } }
-        });
+      this._transactions = this._user.transactions || [];
+      this._initReports();
+    }
 
-        // 3. رسم Bar Chart (المقارنة)
-        new Chart(document.getElementById('compareChart'), {
-            type: 'bar',
-            data: {
-                labels: ['Income', 'Expenses'],
-                datasets: [{
-                    label: 'Amount ($)',
-                    data: [totalIncome, totalExpense],
-                    backgroundColor: ['#4d6ef6', '#00ab6b'],
-                    borderRadius: 10
-                }]
-            },
-            options: { scales: { y: { beginAtZero: true } } }
-        });
+    // ── Data Methods ──────────────────────────────────────────
+    /**
+     * Processes transactions to produce:
+     *   - categoryData: { categoryName -> total expense amount }
+     *   - totalIncome, totalExpense
+     */
+    _processData() {
+      const categoryData = {};
+      let totalIncome  = 0;
+      let totalExpense = 0;
 
-        // 4. توليد نصيحة ذكية
-        const insightText = document.getElementById('insightText');
-        if (totalExpense > totalIncome && totalIncome > 0) {
-            insightText.innerText = "Warning: Your expenses exceeded your income this month. Try to cut down on non-essential categories.";
-        } else if (totalExpense === 0) {
-            insightText.innerText = "No expense data yet. Start adding transactions to see your financial health!";
-        } else {
-            const topCategory = Object.keys(categoryData).reduce((a, b) => categoryData[a] > categoryData[b] ? a : b);
-            insightText.innerText = `Great job! You are within your budget. Note that "${topCategory}" is your highest spending category.`;
+      this._transactions.forEach((t) => {
+        const amount = Number(t.amount);
+        if (t.type === "expense") {
+          categoryData[t.category] = (categoryData[t.category] || 0) + amount;
+          totalExpense += amount;
+        } else if (t.type === "income") {
+          totalIncome += amount;
+        } else if (t.type === "saving") {
+          // Savings count as an outflow from the available balance
+          totalExpense += amount;
         }
-    };
+      });
+
+      return { categoryData, totalIncome, totalExpense };
+    }
+
+    // ── Chart Methods ─────────────────────────────────────────
+    _initCategoryChart(categoryData) {
+      new Chart(document.getElementById("categoryChart"), {
+        type: "doughnut",
+        data: {
+          labels: Object.keys(categoryData),
+          datasets: [{
+            data: Object.values(categoryData),
+            backgroundColor: ["#4d6ef6", "#00ab6b", "#ffb84d", "#ff5b5b", "#a6b1e1"],
+            borderWidth: 0,
+          }],
+        },
+        options: {
+          cutout: "75%",
+          plugins: { legend: { position: "bottom" } },
+        },
+      });
+    }
+
+    _initCompareChart(totalIncome, totalExpense) {
+      new Chart(document.getElementById("compareChart"), {
+        type: "bar",
+        data: {
+          labels: ["Income", "Expenses"],
+          datasets: [{
+            label: "Amount ($)",
+            data: [totalIncome, totalExpense],
+            backgroundColor: ["#4d6ef6", "#00ab6b"],
+            borderRadius: 10,
+          }],
+        },
+        options: { scales: { y: { beginAtZero: true } } },
+      });
+    }
+
+    // ── UI Methods ────────────────────────────────────────────
+    _renderInsight(categoryData, totalIncome, totalExpense) {
+      const el = document.getElementById("insightText");
+      if (totalExpense === 0) {
+        el.innerText = "No expense data yet. Start adding transactions to see your financial health!";
+      } else if (totalExpense > totalIncome && totalIncome > 0) {
+        el.innerText = "⚠️ Warning: Your expenses exceeded your income. Try to cut down on non-essential categories.";
+      } else {
+        const topCategory = Object.keys(categoryData).reduce((a, b) =>
+          categoryData[a] > categoryData[b] ? a : b
+        );
+        el.innerText = `✅ Great job! You are within your budget. Note that "${topCategory}" is your highest spending category.`;
+      }
+    }
+
+    // ── Initializer ───────────────────────────────────────────
+    _initReports() {
+      const { categoryData, totalIncome, totalExpense } = this._processData();
+      this._initCategoryChart(categoryData);
+      this._initCompareChart(totalIncome, totalExpense);
+      this._renderInsight(categoryData, totalIncome, totalExpense);
+    }
+  }
+
+  // Bootstrap
+  new ReportsApp();
 </script>
 </body>
 </html>

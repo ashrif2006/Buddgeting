@@ -23,7 +23,7 @@
         </div>
 
         <div class="text-center mb-4">
-            <div class="icon-box" onclick="changeEmoji()"><span id="goalEmoji">🎯</span></div>
+            <div class="icon-box" id="emojiPickerBtn"><span id="goalEmoji">🎯</span></div>
             <p class="small text-success">Choose goal icon</p>
         </div>
 
@@ -50,35 +50,73 @@
     </div>
 
 <script>
-    function changeEmoji() {
-        const emojis = ['🎯', '🚗', '🏠', '💻', '✈️', '💍', '🎓'];
-        const current = document.getElementById("goalEmoji").innerText;
-        let next = emojis[(emojis.indexOf(current) + 1) % emojis.length];
-        document.getElementById("goalEmoji").innerText = next;
+  class CreateGoalApp {
+    constructor() {
+      // ── Session Guard ─────────────────────────────────────
+      this._session = JSON.parse(localStorage.getItem("userAccount"));
+      if (!this._session) { window.location.href = "login.html"; return; }
+
+      this._emojis = ["🎯", "🚗", "🏠", "💻", "✈️", "💍", "🎓"];
+      this._initEvents();
     }
 
-    document.getElementById("goalForm").onsubmit = function(e) {
-        e.preventDefault();
-        const session = JSON.parse(localStorage.getItem("userAccount"));
-        let allUsers = JSON.parse(localStorage.getItem("allUsers")) || [];
-        const userIdx = allUsers.findIndex(u => u.email === session.email);
+    // ── UI Methods ────────────────────────────────────────────
+    _cycleEmoji() {
+      const el      = document.getElementById("goalEmoji");
+      const current = el.innerText;
+      const nextIdx = (this._emojis.indexOf(current) + 1) % this._emojis.length;
+      el.innerText  = this._emojis[nextIdx];
+    }
 
-        if(userIdx === -1) return;
-        if(!allUsers[userIdx].goals) allUsers[userIdx].goals = [];
+    // ── Data Methods ──────────────────────────────────────────
+    _saveGoal(name, target, initial, deadline, icon) {
+      let allUsers  = JSON.parse(localStorage.getItem("allUsers")) || [];
+      const userIdx = allUsers.findIndex((u) => u.email === this._session.email);
+      if (userIdx === -1) return;
 
-        const newGoal = {
-            id: Date.now(),
-            name: document.getElementById("goalName").value,
-            target: parseFloat(document.getElementById("goalTarget").value),
-            current: parseFloat(document.getElementById("goalInitial").value) || 0,
-            deadline: document.getElementById("goalDeadline").value,
-            icon: document.getElementById("goalEmoji").innerText
-        };
+      if (!allUsers[userIdx].goals) allUsers[userIdx].goals = [];
 
-        allUsers[userIdx].goals.push(newGoal);
-        localStorage.setItem("allUsers", JSON.stringify(allUsers));
-        window.location.href = "goals.html";
-    };
+      const newGoal = {
+        id:       Date.now(),
+        name,
+        target,
+        current:  initial,
+        deadline,
+        icon,
+      };
+
+      allUsers[userIdx].goals.push(newGoal);
+      localStorage.setItem("allUsers", JSON.stringify(allUsers));
+      window.location.href = "goals.html";
+    }
+
+    // ── Event Initialization ──────────────────────────────────
+    _initEvents() {
+      // Emoji picker button
+      document.getElementById("emojiPickerBtn")
+        .addEventListener("click", () => this._cycleEmoji());
+
+      // Form submit
+      document.getElementById("goalForm")
+        .addEventListener("submit", (e) => {
+          e.preventDefault();
+          const name     = document.getElementById("goalName").value.trim();
+          const target   = parseFloat(document.getElementById("goalTarget").value);
+          const initial  = parseFloat(document.getElementById("goalInitial").value) || 0;
+          const deadline = document.getElementById("goalDeadline").value;
+          const icon     = document.getElementById("goalEmoji").innerText;
+
+          if (!name || isNaN(target) || target <= 0 || !deadline) {
+            return alert("Please fill all required fields with valid values.");
+          }
+
+          this._saveGoal(name, target, initial, deadline, icon);
+        });
+    }
+  }
+
+  // Bootstrap
+  new CreateGoalApp();
 </script>
 </body>
 </html>

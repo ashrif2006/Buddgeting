@@ -140,7 +140,6 @@
               id="category"
               class="form-select"
               required
-              onchange="updateEmoji()"
             >
               <option value="Food & Dining" data-emoji="🍔">
                 Food & Dining
@@ -210,64 +209,40 @@
 
     <!-- JavaScript Logic -->
     <script>
-      // دالة لتغيير الإيموجي بناءً على القسم المختار
-      function updateEmoji() {
-        const select = document.getElementById("category");
-        const selectedOption = select.options[select.selectedIndex];
-        const emoji = selectedOption.getAttribute("data-emoji");
-        document.getElementById("current-emoji").innerText = emoji;
-      }
-
-      const budgetForm = document.getElementById("budget-form");
-
-      if (budgetForm) {
-        budgetForm.addEventListener("submit", function (e) {
-          e.preventDefault();
-
-          const session = JSON.parse(localStorage.getItem("userAccount"));
-
-          // حماية
-          if (!session || !session.email) {
+      class CreateBudgetApp {
+        constructor() {
+          // ── Session Guard ─────────────────────────────────────
+          this._session = JSON.parse(localStorage.getItem("userAccount"));
+          if (!this._session || !this._session.email) {
             window.location.href = "login.html";
             return;
           }
+          this._initEvents();
+        }
 
-          const category = document.getElementById("category").value;
-          const amount = parseFloat(document.getElementById("amount").value);
-          const startDate = document.getElementById("start-date").value;
-          const endDate = document.getElementById("end-date").value;
-          const icon = document.getElementById("current-emoji").innerText;
+        // ── UI Methods ────────────────────────────────────────────
+        _updateEmoji() {
+          const select   = document.getElementById("category");
+          const selected = select.options[select.selectedIndex];
+          const emoji    = selected.getAttribute("data-emoji");
+          document.getElementById("current-emoji").innerText = emoji;
+        }
 
-          // Validation
-          if (!category || !amount || !startDate || !endDate) {
-            alert("Please fill all fields");
-            return;
-          }
+        _showError(message) {
+          alert(message);
+        }
 
-          if (amount <= 0) {
-            alert("Amount must be greater than 0");
-            return;
-          }
-
-          // جلب المستخدمين
-          let allUsers = JSON.parse(localStorage.getItem("allUsers")) || [];
-          const userIdx = allUsers.findIndex((u) => u.email === session.email);
-
+        // ── Data Methods ──────────────────────────────────────────
+        _saveBudget(category, amount, startDate, endDate, icon) {
+          let allUsers  = JSON.parse(localStorage.getItem("allUsers")) || [];
+          const userIdx = allUsers.findIndex((u) => u.email === this._session.email);
           if (userIdx === -1) return;
 
-          // تأكد إن budgets موجودة
-          if (!allUsers[userIdx].budgets) {
-            allUsers[userIdx].budgets = [];
-          }
+          if (!allUsers[userIdx].budgets) allUsers[userIdx].budgets = [];
 
-          // منع تكرار نفس الكاتيجوري
-          const existing = allUsers[userIdx].budgets.find(
-            (b) => b.category === category,
-          );
-          if (existing) {
-            alert("Budget for this category already exists!");
-            return;
-          }
+          // Prevent duplicate category
+          const existing = allUsers[userIdx].budgets.find((b) => b.category === category);
+          if (existing) return this._showError("A budget for this category already exists!");
 
           const newBudget = {
             id: Date.now(),
@@ -281,14 +256,42 @@
           };
 
           allUsers[userIdx].budgets.push(newBudget);
-
-          // حفظ
           localStorage.setItem("allUsers", JSON.stringify(allUsers));
-
           alert("Budget created successfully!");
           window.location.href = "budgets.html";
-        });
+        }
+
+        // ── Event Initialization ──────────────────────────────────
+        _initEvents() {
+          // Category dropdown → update emoji
+          document.getElementById("category")
+            .addEventListener("change", () => this._updateEmoji());
+
+          // Form submit
+          document.getElementById("budget-form")
+            .addEventListener("submit", (e) => {
+              e.preventDefault();
+
+              const category  = document.getElementById("category").value;
+              const amount    = parseFloat(document.getElementById("amount").value);
+              const startDate = document.getElementById("start-date").value;
+              const endDate   = document.getElementById("end-date").value;
+              const icon      = document.getElementById("current-emoji").innerText;
+
+              if (!category || !amount || !startDate || !endDate) {
+                return this._showError("Please fill all fields.");
+              }
+              if (amount <= 0) {
+                return this._showError("Amount must be greater than 0.");
+              }
+
+              this._saveBudget(category, amount, startDate, endDate, icon);
+            });
+        }
       }
+
+      // Bootstrap
+      new CreateBudgetApp();
     </script>
 
     <!-- Bootstrap Bundle with Popper JS -->

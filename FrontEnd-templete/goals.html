@@ -53,51 +53,75 @@
 </div>
 
 <script>
-window.onload = function() {
-    const session = JSON.parse(localStorage.getItem("userAccount"));
-    if(!session) { window.location.href="login.html"; return; }
-    
-    document.getElementById("userName").innerText = session.name;
-    document.getElementById("userAvatar").innerText = session.name.charAt(0).toUpperCase();
+  class GoalsApp {
+    constructor() {
+      // ── Session Guard ─────────────────────────────────────
+      this._session = JSON.parse(localStorage.getItem("userAccount"));
+      if (!this._session) { window.location.href = "login.html"; return; }
 
-    const allUsers = JSON.parse(localStorage.getItem("allUsers")) || [];
-    const user = allUsers.find(u => u.email === session.email);
-    const goals = user.goals || [];
+      const allUsers = JSON.parse(localStorage.getItem("allUsers")) || [];
+      this._user = allUsers.find((u) => u.email === this._session.email);
 
-    renderGoals(goals);
-};
+      if (!this._user) {
+        localStorage.removeItem("userAccount");
+        window.location.href = "login.html";
+        return;
+      }
 
-function renderGoals(goals) {
-    const container = document.getElementById("goalsList");
-    let savedTotal = 0, targetTotal = 0;
-    container.innerHTML = goals.length === 0 ? '<p class="text-center text-muted">No goals yet. Start saving!</p>' : '';
+      this._initUI();
+    }
 
-    goals.forEach(g => {
-        const percent = Math.min((g.current / g.target) * 100, 100);
-        savedTotal += Number(g.current);
-        targetTotal += Number(g.target);
-        
-        container.innerHTML += `
+    // ── UI Methods ────────────────────────────────────────────
+    _initUI() {
+      document.getElementById("userName").innerText    = this._session.name;
+      document.getElementById("userAvatar").innerText = this._session.name.charAt(0).toUpperCase();
+      this._renderGoals(this._user.goals || []);
+    }
+
+    _renderGoals(goals) {
+      const container = document.getElementById("goalsList");
+      let savedTotal  = 0;
+      let targetTotal = 0;
+
+      if (goals.length === 0) {
+        container.innerHTML = `<p class="text-center text-muted">No goals yet. Start saving!</p>`;
+      } else {
+        container.innerHTML = goals.map((g) => {
+          const percent = Math.min((g.current / g.target) * 100, 100);
+          savedTotal  += Number(g.current);
+          targetTotal += Number(g.target);
+          return `
             <div class="goal-card shadow-sm">
-                <div class="d-flex align-items-center mb-2">
-                    <div class="goal-icon">${g.icon || '🎯'}</div>
-                    <div class="flex-grow-1">
-                        <h6 class="fw-bold mb-0">${g.name}</h6>
-                        <small class="text-muted">Target: $${Number(g.target).toLocaleString()} • Deadline: ${g.deadline}</small>
-                    </div>
+              <div class="d-flex align-items-center mb-2">
+                <div class="goal-icon">${g.icon || "🎯"}</div>
+                <div class="flex-grow-1">
+                  <h6 class="fw-bold mb-0">${g.name}</h6>
+                  <small class="text-muted">Target: $${Number(g.target).toLocaleString()} • Deadline: ${g.deadline}</small>
                 </div>
-                <div class="progress"><div class="progress-bar bg-success" style="width: ${percent}%"></div></div>
-                <div class="d-flex justify-content-between small fw-bold">
-                    <span class="text-success">${percent.toFixed(0)}% - $${Number(g.current).toLocaleString()} saved</span>
-                    <span class="text-muted">$${Math.max(0, g.target - g.current).toLocaleString()} left</span>
-                </div>
+              </div>
+              <div class="progress">
+                <div class="progress-bar bg-success" style="width: ${percent}%"></div>
+              </div>
+              <div class="d-flex justify-content-between small fw-bold">
+                <span class="text-success">${percent.toFixed(0)}% — $${Number(g.current).toLocaleString()} saved</span>
+                <span class="text-muted">$${Math.max(0, g.target - g.current).toLocaleString()} left</span>
+              </div>
             </div>`;
-    });
-    
-    document.getElementById("activeGoalsCount").innerText = goals.length;
-    document.getElementById("totalSaved").innerText = "$" + savedTotal.toLocaleString();
-    document.getElementById("totalTarget").innerText = "$" + targetTotal.toLocaleString();
-}
+        }).join("");
+      }
+
+      this._renderStats(goals.length, savedTotal, targetTotal);
+    }
+
+    _renderStats(count, saved, target) {
+      document.getElementById("activeGoalsCount").innerText = count;
+      document.getElementById("totalSaved").innerText       = `$${saved.toLocaleString()}`;
+      document.getElementById("totalTarget").innerText      = `$${target.toLocaleString()}`;
+    }
+  }
+
+  // Bootstrap
+  new GoalsApp();
 </script>
 </body>
 </html>
