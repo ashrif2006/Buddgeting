@@ -1,7 +1,7 @@
 BudgetWise - Personal Finance Tracker
 BudgetWise is a comprehensive, client-side web application designed to help users manage their finances by tracking income, expenses, budgets, and savings goals. The application features a modern, responsive interface built with Bootstrap and handles data persistence using browser local storage.
 
-🚀 Features
+Features:
 User Authentication: Secure sign-up and login system with multi-user support.
 
 Dashboard: A high-level overview of total balance, recent transactions, and financial health.
